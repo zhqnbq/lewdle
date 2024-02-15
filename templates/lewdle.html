@@ -6,7 +6,64 @@
 
     </head>
     <body>
+        <script>
+            var globalNum=0;
+            function _check(){
+                var value = document.getElementById("wordG").value;
+                let xhr = new XMLHttpRequest();
+                var _lnk = location.origin();
+                _lnk = _lnk + '/lewdle';
+
+                xhr.open('POST',_lnk);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.send('word='+ '{{ data[0] }}' + '&predict=' + value);
+                // 以下开始监听
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        globalNum++;
+                        if(globalNum == 6 && xhr.responseText != '11111'){
+                            alert('the result is ' + '{{ data[0] }}');
+                            alert('mean: \n'+ '{{data[2] }}');
+                            
+                            return ;
+                        }
+                        console.log(xhr.responseText);
+                        if(xhr.responseText =='11111'){
+                            alert('right')
+                            alert('mean: \n'+ '{{data[2] }}');
+                            return ;
+                        }
+                        else {
+                            document.getElementById(globalNum.toString()).value =  ''//unfinished
+                        }
+                    }
+                }
+            }
+        </script>
         <h1>word Length : {{ data[1] }}</h1>
-        <input maxlength="{{data[1]}}" id="submit"
+        <label>
+            <li id="1">
+
+            </li>
+            <li id="2">
+
+            </li>
+            <li id="3">
+
+            </li>
+            <li id="4">
+
+            </li>
+            <li id="5">
+
+            </li>
+            <li id="6">
+
+            </li>
+        </label>
+        <form action=""
+        <input maxlength="{{data[1]}}" id="wordG" name="wordG">
+        <button id="submit" type="button" onsubmit=_check()>
+
     </body>
 </html>

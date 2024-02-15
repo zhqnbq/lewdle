@@ -12,11 +12,35 @@ dict=open("dicktionary.json","r")
 _dict=json.load(dict) 
 validDict=open("dict.json","r")
 _valid=json.load(validDict)
+plain = open("plain.json","r")
+plainDict=json.load(plain)
+
+def getRes(word,pred):
+    result=''
+    for i in range(0,len(word)-1):
+        if word[i] == pred[i]:
+            result += '1'
+        elif word.count(pred[i]) != 0:
+            result += '2'
+        else :
+            result += '0'
+    return result
 
 @app.route('/lewdle')
 def lewdle():
+    if request.method=="POST":
+        _word = request.form['word']
+        _pred = request.form['predict']
+        if len(_word) != len(_pred):
+            return '-1'
+        return getRes(_word,_pred)
     word=_dict[int(uniform(0,999))]
     _list=[word,str(len(word))]
+    try :
+        _Text = plainDict[word]
+        _list.append(_Text)
+    except:
+        _list.append('')
     return flask.render_template("lewdle.html",data=_list)
 
 @app.route('/checkValid',methods=['POST'])
