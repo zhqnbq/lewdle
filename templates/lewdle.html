@@ -31,14 +31,16 @@
         <button id="submit" type="button" onclick="Wcheck()">提交答案</button>
         <script type="text/javascript">
             
-            var _greenTag="<nobr style=\"color: #00ff00;\">";
-            var _yellowTag="<nobr style=\"color: #ffff00;\">";
+            var _greenTag="<nobr style=\"color: rgb(0, 193, 32)\">";
+            var _yellowTag="<nobr style=\"color: rgba(255, 196, 0, 0.947)\">";
             var _greyTag = "<nobr style=\"color: grey;\">";
             var _endTag="</nobr>";
             var globalNum=0;
             var result='';
             var ans="{{ data[0] }}";
+            var _ok=true;//是否输入了正确的单词
             function Wcheck(){
+                _ok=true;
                 var value = document.getElementById("wordG").value.toString();
                 if(value.length != ans.length){
                     alert("不正确的单词长度");
@@ -53,9 +55,13 @@
                     if(_xhr.readyState === 4 && _xhr.status === 200){
                         if(_xhr.responseText !="1"){
                             alert("不存在的单词");
+                            _ok=false;
                             return ;
                         }
                     }
+                }
+                if(!_ok){//输入错误
+                    return ;
                 }
                 let xhr = new XMLHttpRequest();
                 var _lnk = _host + "/lewdle";
@@ -69,14 +75,17 @@
                         if(globalNum == 6 && xhr.responseText != "11111"){
                             alert("the result is " + "{{ data[0] }}");
                             alert("mean: \n"+ "{{data[2] }}");
-                            
+                            document.getElementById("wordG").setAttribute("readOnly", "true");
+                            document.getElementById("submit").disabled = true;
                             return ;
                         }
                         console.log(xhr.responseText);
                         if(xhr.responseText.toString() =="11111"){
-                            alert("right")
+                            alert("right");
                             var mean="{{data[2]}}";
-                            alert("mean: \n"+ mean.replace("^","\n"));
+                            alert("mean: \n"+ mean.replace('^','\n'));
+                            document.getElementById("wordG").setAttribute("readOnly", "true");
+                            document.getElementById("submit").disabled = true;
                             return ;
                         }
                         else {

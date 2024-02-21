@@ -48,7 +48,7 @@ def lewdle():
 
 @app.route('/checkValid',methods=['POST'])
 def checkValid():
-    if _valid.count(request.form['word'])!='0':
+    if _valid.count(request.form['word'])!=0:
         return '1'
     return '0'
 
