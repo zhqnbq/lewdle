@@ -17,7 +17,9 @@ plainDict=json.load(plain)
 
 def getRes(word,pred):
     result=''
-    for i in range(0,len(word)-1):
+    print(word)
+    for i in range(0,len(word)):
+        print(i)
         if word[i] == pred[i]:
             result += '1'
         elif word.count(pred[i]) != 0:
@@ -26,11 +28,12 @@ def getRes(word,pred):
             result += '0'
     return result
 
-@app.route('/lewdle')
+@app.route('/lewdle',methods=['POST','GET'])
 def lewdle():
     if request.method=="POST":
-        _word = request.form['word']
-        _pred = request.form['predict']
+        print(request.form)
+        _word = request.form['word'].lower()
+        _pred = request.form['predict'].lower()
         if len(_word) != len(_pred):
             return '-1'
         return getRes(_word,_pred)

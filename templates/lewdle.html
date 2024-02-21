@@ -5,83 +5,11 @@
         <meta charset="UTF-8">
     </head>
     <body>
-        <script>
-            
-            var _greenTag="<nobr style=\"color: #00ff00;\">";
-            var _yellowTag="<nobr style=\"color: #ffff00;\">";
-            var _greyTag = "<nobr style=\"color: grey;\">";
-            var _endTag="</nobr>"
-            var globalNum=0;
-            var result='';
-            var ans="{{ data[0] }}"
-            function _check(){
-                var value = document.getElementById("wordG").value.toString();
-            
-                if(value.length != ans.length()){
-                    alert("不正确的单词长度");
-                    return ;
-                }
-                let _xhr = new XMLHttpRequest();
-                var _host = location.origin();
-                _xhr.open("POST",_host +"/checkValid");
-                _xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                _xhr.send("word={{ data[0] }}");
-                _xhr.onreadystatechange = function(){
-                    if(_xhr.readyState === 4 && _xhr.status === 200){
-                        if(_xhr.responseText !="1"){
-                            alert("不存在的单词");
-                            return ;
-                        }
-                    }
-                }
-                let xhr = new XMLHttpRequest();
-                var _lnk = _host + "/lewdle";
-                
-                xhr.open("POST",_lnk);
-                
-                xhr.send("word="+ "{{ data[0] }}" + "&predict=" + value);
-                // 以下开始监听
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        globalNum++;
-                        if(globalNum == 6 && xhr.responseText != "11111"){
-                            alert("the result is " + "{{ data[0] }}");
-                            alert("mean: \n"+ "{{data[2] }}");
-                            
-                            return ;
-                        }
-                        console.log(xhr.responseText);
-                        if(xhr.responseText.toString() =="11111"){
-                            alert("right")
-                            alert("mean: \n"+ "{{data[2] }}");
-                            return ;
-                        }
-                        else {
-                            result = xhr.responseText.toString();
-                            var returnValue="";
-                            for(var i=0;i<ans.length();i++){
-                                if(result[i]==1){
-                                    returnValue+=_greenTag;
-
-                                }else if(result[i]==2 ){
-                                    returnValue +=_yellowTag;
-                                }else{
-                                    returnValue+=_greyTag;
-                                }
-                                returnValue+=value[i];
-                                returnValue+=_endTag;
-                            }
-                            document.getElementById(globalNum.toString()).value =  returnValue;//unfinished
-
-                        }
-                    }
-                }
-            }
-        </script>
+        
         <h1>word Length : {{ data[1] }}</h1>
         <label>
             <li id="1">
-                
+
             </li>
             <li id="2">
                 
@@ -99,9 +27,80 @@
 
             </li>
         </label>
-        <form action=""
         <input maxlength="{{data[1]}}" id="wordG" name="wordG">
-        <button id="submit" type="button" onsubmit=_check()>
+        <button id="submit" type="button" onclick="Wcheck()">提交答案</button>
+        <script type="text/javascript">
+            
+            var _greenTag="<nobr style=\"color: #00ff00;\">";
+            var _yellowTag="<nobr style=\"color: #ffff00;\">";
+            var _greyTag = "<nobr style=\"color: grey;\">";
+            var _endTag="</nobr>";
+            var globalNum=0;
+            var result='';
+            var ans="{{ data[0] }}";
+            function Wcheck(){
+                var value = document.getElementById("wordG").value.toString();
+                if(value.length != ans.length){
+                    alert("不正确的单词长度");
+                    return ;
+                }
+                let _xhr = new XMLHttpRequest();
+                var _host = location.origin;
+                _xhr.open("POST",_host +"/checkValid");
+                _xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                _xhr.send("word="+value);
+                _xhr.onreadystatechange = function(){
+                    if(_xhr.readyState === 4 && _xhr.status === 200){
+                        if(_xhr.responseText !="1"){
+                            alert("不存在的单词");
+                            return ;
+                        }
+                    }
+                }
+                let xhr = new XMLHttpRequest();
+                var _lnk = _host + "/lewdle";
+                xhr.open("POST",_lnk);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.send("word="+ "{{ data[0] }}" + "&predict=" + value);
+                // 以下开始监听
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        globalNum++;
+                        if(globalNum == 6 && xhr.responseText != "11111"){
+                            alert("the result is " + "{{ data[0] }}");
+                            alert("mean: \n"+ "{{data[2] }}");
+                            
+                            return ;
+                        }
+                        console.log(xhr.responseText);
+                        if(xhr.responseText.toString() =="11111"){
+                            alert("right")
+                            var mean="{{data[2]}}";
+                            alert("mean: \n"+ mean.replace("^","\n"));
+                            return ;
+                        }
+                        else {
+                            result = xhr.responseText.toString();
+                            var returnValue="";
+                            for(var i=0;i<ans.length;i++){
+                                if(result[i]=="1"){
+                                    returnValue+=_greenTag;
 
+                                }else if(result[i]=="2" ){
+                                    returnValue +=_yellowTag;
+                                }else{
+                                    returnValue+=_greyTag;
+                                }
+                                returnValue+=value[i];
+                                returnValue+=_endTag;
+                                alert(returnValue);
+                            }
+                            document.getElementById(globalNum.toString()).innerHTML =  returnValue;//unfinished
+
+                        }
+                    }
+                }
+            }
+        </script>
     </body>
 </html>
