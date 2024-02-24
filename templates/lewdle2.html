@@ -1,0 +1,183 @@
+<h2 style="color: #79B851; text-align: center;">Lewdle Game</h2>
+
+<!DOCTYPE html>
+<html  lang="en" prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="utf-8">
+    <title>Lewdle Game - Play Unlimited</title>
+    <link href="/main.min.css?v43.16" rel="stylesheet">
+    <link href="/wordle.min.css?v43.16" rel="stylesheet">
+    
+</head>
+<body class=" " >
+    <!-- <div class="Row-letter" data-animation="none" style="background-clip: border-box;"></div> -->
+<div class="page">
+    <div class="page__wrapper">
+        <section class="section section--grey">
+            <div class="container">
+        <div class="wordle-text">
+            <h2 class="info_text">Word Length: {{ data[1] }}</h2>
+        </div>
+        </div>
+        </section>
+        <div class="container no-pading">
+            <div class="main">
+                <div id="root">
+                    <div class="App-container">
+                        <div class="Game" style="display: block;">
+                            <div id="game-wrapper">
+                                <!-- <div class="Row">
+                                    <div class="Row" id="gameResult">
+                                        
+                                </div> -->
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var globalNum=0;//第几个单词
+    var inlineNum=0;
+    var result='';
+    var ans="{{ data[0] }}";
+    var Times=Number("{{data[1]}}")+1;
+    window.onload=init;
+    function init(){
+        var _="";
+        for(var i=0;i<Times;i++){
+            _+="<div class=\"Row\">";
+            for(var j=0;j<Number("{{data[1]}}");j++){
+                _+="<div class=\"Row-letter\" data-animation=\"none\" id="+i.toString()+"-"+j.toString()+">";
+                _+="<sup style=\"display: none;\"></sup>";
+                _+="</div>";
+            }
+            _+="</div>";
+        }
+        document.getElementById("game-wrapper").innerHTML=_;
+        _Hook();
+    }
+    
+    function _Hook(){
+        window.addEventListener('keydown', main);
+        
+        // 添加键盘松开事件处理函数
+        window.addEventListener('keyup', function() {
+            //啥也不干
+        });
+    }
+    function main(event){
+        // alert("1")
+        if (event.code === 'Enter') {
+            // alert("entered");
+                var _right=false;
+                if(inlineNum==Number("{{data[1]}}")){
+                    var value=getGuess();
+                    let _xhr = new XMLHttpRequest();
+                    var _host = location.origin;
+                    _xhr.open("POST",_host +"/checkValid");
+                    _xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    _xhr.send("word="+value);
+                    _xhr.onreadystatechange = function(){
+                        if(_xhr.readyState === 4 && _xhr.status === 200){
+                            if(_xhr.responseText !="1"){
+                                alert("不存在的单词");
+                            }else{
+                                let xhr = new XMLHttpRequest();
+                                var _lnk = _host + "/lewdle";
+                                xhr.open("POST",_lnk);
+                                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                                xhr.send("word="+ "{{ data[0] }}" + "&predict=" + value);
+                                xhr.onreadystatechange = function () {
+                                    if (xhr.readyState === 4 && xhr.status === 200) {
+                                        // globalNum++;
+                                        ChangeStatus(xhr.responseText);
+                                        globalNum ++;
+                                        inlineNum=0;
+                                        if(globalNum == Times && xhr.responseText != getFullRight()){
+                                            
+                                            alert("the result is " + "{{ data[0] }}");
+                                            alert("mean: \n"+ "{{data[2] }}");
+                                            _right=true;
+                                            window.removeEventListener('keydown',main);
+                                            return ;
+                                        }
+                                        console.log(getFullRight())
+                                        console.log(xhr.responseText);
+                                        if(xhr.responseText == getFullRight()){
+                                            
+                                            alert("right");
+                                            var mean="{{data[2]}}";
+                                            alert("mean: \n"+ mean.replace('^','\n'));
+                                            window.removeEventListener('keydown',main);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(_right){
+                    return false;
+                }
+            }
+            else if(event.code === 'Backspace'){
+                if(inlineNum!=0){
+                    document.getElementById(globalNum +"-" +(inlineNum-1)).innerText='';
+                    inlineNum--;
+                }
+            }
+            else if(isLetter(String.fromCharCode(event.keyCode)) ) {
+                // alert("enter");
+                    // 保存用户输入的字符
+                    // userInput += String.fromCharCode(event.which);
+                    if(inlineNum >= Number("{{data[1]}}")){
+                        ;
+                    }else{
+                        var _Element=document.getElementById((globalNum + "-" +inlineNum));
+                        _Element.innerText=String.fromCharCode(event.which);
+                        _Element.setAttribute("data-animation","pop");
+                        inlineNum++;
+                    }
+                }
+    }
+    function getGuess(){
+        var _="";
+        for(var i=0;i<inlineNum;i++){
+            _+=document.getElementById(globalNum +"-"+i).innerText;
+        }
+        // alert(_);
+        return _;
+    }
+    function isLetter(char) {
+        return (char >= 'a' && char <= 'z') || (char >='A' && char<='Z'); // 判断是否为小写字母
+    }
+    function ChangeStatus(Response){
+        for(var i=0;i<Response.length;i++){
+            var _Element=document.getElementById(globalNum +"-"+i);
+            if(Response[i] == "1"){
+                _Element.classList.add("letter-correct");
+            }else if(Response[i] =="2"){
+                _Element.classList.add("letter-elsewhere");
+            }else{
+                _Element.classList.add("letter-absent");
+            }
+            _Element.setAttribute("data-animation","none");
+        }
+    }
+    function getFullRight(){
+        var _="";
+        for(var i=0;i<Number("{{data[1]}}");i++){
+            _+="1";
+        }
+        return _;
+    }
+    function sleep(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
+    }
+</script>
+
+</body>

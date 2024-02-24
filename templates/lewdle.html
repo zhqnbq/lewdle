@@ -44,7 +44,7 @@
                 var value = document.getElementById("wordG").value.toString();
                 if(value.length != ans.length){
                     alert("不正确的单词长度");
-                    return ;
+                    return;
                 }
                 let _xhr = new XMLHttpRequest();
                 var _host = location.origin;
@@ -54,14 +54,12 @@
                 _xhr.onreadystatechange = function(){
                     if(_xhr.readyState === 4 && _xhr.status === 200){
                         if(_xhr.responseText !="1"){
+                            globalNum--;
+                            value="      ";
                             alert("不存在的单词");
-                            _ok=false;
-                            return ;
+                            return;
                         }
                     }
-                }
-                if(!_ok){//输入错误
-                    return ;
                 }
                 let xhr = new XMLHttpRequest();
                 var _lnk = _host + "/lewdle";

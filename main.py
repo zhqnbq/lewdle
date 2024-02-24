@@ -2,6 +2,7 @@ import flask
 from flask import Flask
 from flask import request
 from random import uniform
+import re
 
 import json
 
@@ -39,16 +40,35 @@ def lewdle():
         return getRes(_word,_pred)
     word=_dict[int(uniform(0,999))]
     _list=[word,str(len(word))]
+
     try :
         _Text = plainDict[word]
         _list.append(_Text)
     except:
         _list.append('')
-    return flask.render_template("lewdle.html",data=_list)
+    user_agent = request.headers.get('User-Agent', '')
+    mobile_patterns = [r'Android', r'iPhone']
+    for pattern in mobile_patterns:
+        if re.search(pattern, user_agent):
+            return flask.render_template("lewdle.html",data=_list)
+    return flask.render_template("lewdle2.html",data=_list)
+
+@app.route('/main.min.css')
+def main_min_css():
+    return flask.render_template("css/main.min.css")
+
+@app.route('/wordle.min.css')
+def wordle_min_css():
+    return flask.render_template("css/wordle.min.css")
+
+@app.route('/smartbanner.min.css')
+def smartbanner_min_css():
+    return flask.render_template("css/smartbanner.min.css")
 
 @app.route('/checkValid',methods=['POST'])
 def checkValid():
-    if _valid.count(request.form['word'])!=0:
+    _get = request.form["word"].lower()
+    if _valid.count(_get)!=0:
         return '1'
     return '0'
 
