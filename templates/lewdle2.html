@@ -25,6 +25,43 @@
 									<div id="game-wrapper">
 
 									</div>
+									<div class="Game-keyboard" id="keyboard">
+										<div class="Game-keyboard-row">
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('q')"">q</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('w')">w</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('e')">e</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('r')">r</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('t')">t</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('y')">y</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('u')">u</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('i')">i</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('o')">o</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('p')">p</div>
+										</div>
+										<div class="Game-keyboard-row">
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('a')">a</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('s')">s</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('d')">d</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('f')">f</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('g')">g</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('h')">h</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('j')">j</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('k')">k</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('l')">l</div>
+										</div>
+										<div class="Game-keyboard-row">
+											<div tabindex="-1" class="Game-keyboard-button Game-keyboard-button-wide" onclick="deleteChar()">Backspace</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('z')">z</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('x')">x</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('c')">c</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('v')">v</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('b')">b</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('n')">n</div>
+											<div tabindex="-1" class="Game-keyboard-button" onclick="addChar('m')">m</div>
+											<div tabindex="-1" class="Game-keyboard-button Game-keyboard-button-wide" onclick="submit()">Enter</div>
+										</div>
+									</div>
+									<button style="display: none;" class="Game-keyboard-button-wide" onclick="location.reload()" id="newGame">Try again</button>
 								</div>
 							</div>
 						</div>
@@ -34,126 +71,138 @@
 		</div>
 		<script type="text/javascript">
 			var globalNum=0;//第几个单词
-			    var inlineNum=0;
-			    var result='';
-			    var ans="{{ data[0] }}";
-			    var Times=Number("{{data[1]}}")+1;
-			    window.onload=init;
-			    function init(){
-			        var _="";
-			        for(var i=0;i<Times;i++){
-			            _+="<div class=\"Row\">";
-			            for(var j=0;j<Number("{{data[1]}}");j++){
-			                _+="<div class=\"Row-letter\" data-animation=\"none\" id="+i.toString()+"-"+j.toString()+">";
-			                _+="<sup style=\"display: none;\"></sup>";
-			                _+="</div>";
-			            }
-			            _+="</div>";
-			        }
-			        document.getElementById("game-wrapper").innerHTML=_;
-			        _Hook();
-			    }
-			    function _Hook(){
-			        window.addEventListener('keydown', main);
-			    }
-			    function main(event){
-			        if (event.code === 'Enter') {
-			                if(inlineNum==Number("{{data[1]}}")){
-			                    var value=getGuess();
-			                    let _xhr = new XMLHttpRequest();
-			                    var _host = location.origin;
-			                    _xhr.open("POST",_host +"/checkValid");
-			                    _xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-			                    _xhr.send("word="+value);
-			                    _xhr.onreadystatechange = function(){
-			                        if(_xhr.readyState === 4 && _xhr.status === 200){
-			                            if(_xhr.responseText !="1"){
-			                                alert("不存在的单词");
-			                            }else{
-			                                let xhr = new XMLHttpRequest();
-			                                var _lnk = _host + "/lewdle";
-			                                xhr.open("POST",_lnk);
-			                                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-			                                xhr.send("word="+ "{{ data[0] }}" + "&predict=" + value);
-			                                xhr.onreadystatechange = function () {
-			                                    if (xhr.readyState === 4 && xhr.status === 200) {
-			                                        ChangeStatus(xhr.responseText);
-			                                        globalNum ++;
-			                                        inlineNum=0;
-			                                        if(globalNum == Times && xhr.responseText != getFullRight()){
-			                                            
-			                                            alert("the result is " + "{{ data[0] }}");
-			                                            alert("mean: \n"+ "{{data[2] }}");
-			                                            _right=true;
-			                                            window.removeEventListener('keydown',main);
-			                                            return ;
-			                                        }
-			                                        console.log(getFullRight())
-			                                        console.log(xhr.responseText);
-			                                        if(xhr.responseText == getFullRight()){
-			                                            
-			                                            alert("right");
-			                                            var mean="{{data[2]}}";
-			                                            alert("mean: \n"+ mean.replace('^','\n'));
-			                                            window.removeEventListener('keydown',main);
-			                                        }
-			                                    }
-			                                }
-			                            }
-			                        }
-			                    }
-			                }
-			            }
-			            else if(event.code === 'Backspace'){
-			                if(inlineNum!=0){
-			                    document.getElementById(globalNum +"-" +(inlineNum-1)).innerText='';
-			                    inlineNum--;
-			                }
-			            }
-			            else if(isLetter(String.fromCharCode(event.keyCode)) ) {
-			                    if(inlineNum >= Number("{{data[1]}}")){
-			                        ;
-			                    }else{
-			                        var _Element=document.getElementById((globalNum + "-" +inlineNum));
-			                        _Element.innerText=String.fromCharCode(event.which);
-			                        _Element.setAttribute("data-animation","pop");
-			                        inlineNum++;
-			                    }
-			                }
-			    }
-			    function getGuess(){
-			        var _="";
-			        for(var i=0;i<inlineNum;i++){
-			            _+=document.getElementById(globalNum +"-"+i).innerText;
-			        }
-			        return _;
-			    }
-			    function isLetter(char) {
-			        return (char >= 'a' && char <= 'z') || (char >='A' && char<='Z');
-			    }
-			    function ChangeStatus(Response){
-			        for(var i=0;i<Response.length;i++){
-			            var _Element=document.getElementById(globalNum +"-"+i);
-			            if(Response[i] == "1"){
-			                _Element.classList.add("letter-correct");
-			            }else if(Response[i] =="2"){
-			                _Element.classList.add("letter-elsewhere");
-			            }else{
-			                _Element.classList.add("letter-absent");
-			            }
-			            _Element.setAttribute("data-animation","none");
-			        }
-			    }
-			    function getFullRight(){
-			        var _="";
-			        for(var i=0;i<Number("{{data[1]}}");i++){
-			            _+="1";
-			        }
-			        return _;
-			    }
-			    function sleep(time) {
-			        return new Promise(resolve => setTimeout(resolve, time));
-			    }
+			var inlineNum=0;
+			var result='';
+			var ans="{{ data[0] }}";
+			var Times=Number("{{data[1]}}")+1;
+			window.onload=init;
+			function init(){
+				var _="";
+				for(var i=0;i<Times;i++){
+					_+="<div class=\"Row\">";
+					for(var j=0;j<Number("{{data[1]}}");j++){
+						_+="<div class=\"Row-letter\" data-animation=\"none\" id="+i.toString()+"-"+j.toString()+">";
+						_+="<sup style=\"display: none;\"></sup>";
+						_+="</div>";
+					}
+					_+="</div>";
+				}
+				document.getElementById("game-wrapper").innerHTML=_;
+				_Hook();
+			}
+			function _Hook(){
+				window.addEventListener('keydown', main);
+			}
+			function main(event){
+				if (event.code === 'Enter') {
+					submit()
+				} else if(event.code === 'Backspace'){
+					if(inlineNum!=0){
+						deleteChar();
+					}
+				}
+				else if(isLetter(String.fromCharCode(event.keyCode)) ) {
+					if(inlineNum >= Number("{{data[1]}}")){
+						;
+					}else{
+						addChar(String.fromCharCode(event.which));
+					}
+				}
+			}
+			function getGuess(){
+				var _="";
+				for(var i=0;i<inlineNum;i++){
+					_+=document.getElementById(globalNum +"-"+i).innerText;
+				}
+				return _;
+			}
+			function isLetter(char) {
+				return (char >= 'a' && char <= 'z') || (char >='A' && char<='Z');
+			}
+			function ChangeStatus(Response){
+				for(var i=0;i<Response.length;i++){
+					var _Element=document.getElementById(globalNum +"-"+i);
+					if(Response[i] == "1"){
+						_Element.classList.add("letter-correct");
+					}else if(Response[i] =="2"){
+						_Element.classList.add("letter-elsewhere");
+					}else{
+						_Element.classList.add("letter-absent");
+					}
+					_Element.setAttribute("data-animation","none");
+				}
+			}
+			function getFullRight(){
+				var _="";
+				for(var i=0;i<Number("{{data[1]}}");i++){
+					_+="1";
+				}
+				return _;
+			}
+			function sleep(time) {
+				return new Promise(resolve => setTimeout(resolve, time));
+			}
+			function addChar(chr){
+				var _Element=document.getElementById((globalNum + "-" +inlineNum));
+				_Element.innerText=chr;
+				_Element.setAttribute("data-animation","pop");
+				inlineNum++;
+			}
+			function deleteChar(){
+				document.getElementById(globalNum +"-" +(inlineNum-1)).innerText='';
+				inlineNum--;
+			}
+			function submit(){
+				if(inlineNum==Number("{{data[1]}}")){
+					var value=getGuess();
+					let _xhr = new XMLHttpRequest();
+					var _host = location.origin;
+					_xhr.open("POST",_host +"/checkValid");
+					_xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					_xhr.send("word="+value);
+					_xhr.onreadystatechange = function(){
+						if(_xhr.readyState === 4 && _xhr.status === 200){
+							if(_xhr.responseText !="1"){
+								alert("不存在的单词");
+							}else{
+								let xhr = new XMLHttpRequest();
+								var _lnk = _host + "/lewdle";
+								xhr.open("POST",_lnk);
+								xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+								xhr.send("word="+ "{{ data[0] }}" + "&predict=" + value);
+								xhr.onreadystatechange = function () {
+									if (xhr.readyState === 4 && xhr.status === 200) {
+										ChangeStatus(xhr.responseText);
+										globalNum ++;
+										inlineNum=0;
+										if(globalNum == Times && xhr.responseText != getFullRight()){
+											
+											alert("the result is " + "{{ data[0] }}");
+											alert("mean: \n"+ "{{data[2] }}");
+											_right=true;
+											document.getElementById("keyboard").innerHTML="";
+											document.getElementById("newGame").style="";
+											window.removeEventListener('keydown',main);
+											return ;
+										}
+										console.log(getFullRight())
+										console.log(xhr.responseText);
+										if(xhr.responseText == getFullRight()){
+											
+											alert("right");
+											var mean="{{data[2]}}";
+											alert("mean: \n"+ mean.replace('^','\n'));
+											document.getElementById("keyboard").innerHTML="";
+											document.getElementById("newGame").style="";
+											window.removeEventListener('keydown',main);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		</script>
 	</body>
 </html>

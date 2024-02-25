@@ -46,11 +46,6 @@ def lewdle():
         _list.append(_Text)
     except:
         _list.append('')
-    user_agent = request.headers.get('User-Agent', '')
-    mobile_patterns = [r'Android', r'iPhone']
-    for pattern in mobile_patterns:
-        if re.search(pattern, user_agent):
-            return flask.render_template("lewdle.html",data=_list)
     return flask.render_template("lewdle2.html",data=_list)
 
 @app.route('/main.min.css')
