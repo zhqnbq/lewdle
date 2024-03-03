@@ -17,16 +17,41 @@ plain = open("plain.json","r")
 plainDict=json.load(plain)
 
 def getRes(word,pred):
-    result=''
-    print(word)
+    result='00000'
+    resultCount={}
     for i in range(0,len(word)):
-        print(i)
         if word[i] == pred[i]:
-            result += '1'
-        elif word.count(pred[i]) != 0:
-            result += '2'
-        else :
-            result += '0'
+            result[i]="1"
+            try:
+                resultCount[pred[i]]+=1
+            except:
+                resultCount[pred[i]]=1
+    for i in range(0,len(word)):
+        if result[i] !="1" and word.count(pred[i])!=0:
+            try:
+                if resultCount[pred[i]] != word.count(pred[i]):
+                    resultCount[pred[i]]+=1
+                    result[i]="2"
+            except:
+                resultCount[pred[i]]=1
+                result[i]="2"
+    return result
+    # print(word)
+    # for i in range(0,len(word)):
+    #     print(i)
+    #     if word[i] == pred[i]:
+    #         result += '1'
+    #         try:
+    #             resultCount[pred[i]]+=1
+    #         except:
+    #             resultCount[pred[i]]=1
+    #     elif word.count(pred[i]) != 0:
+    #         try:
+                
+
+    #         result += '2'
+    #     else :
+    #         result += '0'
     return result
 
 @app.route('/lewdle',methods=['POST','GET'])
