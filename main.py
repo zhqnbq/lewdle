@@ -52,7 +52,7 @@ def getRes(word,pred):
     #         result += '2'
     #     else :
     #         result += '0'
-    return result
+    # return result
 
 @app.route('/lewdle',methods=['POST','GET'])
 def lewdle():
