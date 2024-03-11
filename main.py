@@ -17,24 +17,27 @@ plain = open("plain.json","r")
 plainDict=json.load(plain)
 
 def getRes(word,pred):
-    result='00000'
+    result=''
+    for i in range(0,len(word)):
+        result=result+'0'
     resultCount={}
     for i in range(0,len(word)):
+        print(word[i]+' '+pred[i])
         if word[i] == pred[i]:
-            result[i]="1"
+            result=result[:(i)]+'1'+result[(i+1):]
             try:
                 resultCount[pred[i]]+=1
-            except:
+            except KeyError:
                 resultCount[pred[i]]=1
     for i in range(0,len(word)):
-        if result[i] !="1" and word.count(pred[i])!=0:
+        if result[i] !='1' and word.count(pred[i])!=0:
             try:
                 if resultCount[pred[i]] != word.count(pred[i]):
                     resultCount[pred[i]]+=1
-                    result[i]="2"
-            except:
+                    result=result[:(i)]+'2'+result[(i+1):]
+            except KeyError:
                 resultCount[pred[i]]=1
-                result[i]="2"
+                result=result[:(i)]+'2'+result[(i+1):]
     return result
     # print(word)
     # for i in range(0,len(word)):
